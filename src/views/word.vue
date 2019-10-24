@@ -25,8 +25,8 @@ export default {
         modules: {
           toolbar: []
         },
-        placeholder: ""
-      },
+        placeholder: "在此粘贴内容"
+      }
     };
   },
   mounted() {},
@@ -130,15 +130,14 @@ export default {
       this.editor = e;
     },
     // 内容改变事件
-    onEditorChange(e) {
-    }
+    onEditorChange(e) {}
   }
 };
 </script>
 
 <style>
 .ql-editor {
-  height: 750px;
+  height: 700px;
 }
 .onblur {
   width: 300px;
@@ -152,7 +151,7 @@ export default {
   color: #fff;
   cursor: pointer;
 }
-.ql-toolbar{
+.ql-toolbar {
   display: none;
 }
 </style>
