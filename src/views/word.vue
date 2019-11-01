@@ -73,11 +73,12 @@ export default {
       let f_nodes_four = [];
       let template;
       node_arr.forEach(x => {
+        // console.log(x.innerText);
         let isT_one = false;
         let isT_two = false;
         let isT_three = false;
         let isT_four = false;
-        x.innerHTML = x.innerHTML.replace(/&nbsp;/g, "");
+        x.innerHTML = x.innerText.replace(/&nbsp;/g, "");
         x.innerHTML = x.innerHTML.replace(/\s/g, "");
         arr_one.forEach(t_one => {
           if (x.innerHTML.indexOf(t_one) > -1) {
