@@ -193,7 +193,6 @@ export default {
 <style lang="less">
 .e_container {
   position: relative;
-  overflow: scroll;
   display: flex;
   flex-direction: row;
   padding: 20px;
