@@ -66,6 +66,7 @@ export default {
       let arr_three = ["1.", "2.", "3.", "4.", "5.", "6."];
       let arr_four = ["（1）", "（2）", "（3）", "（4）", "（5）", "（6）"];
       let other_str = ["“", "”"];
+      let title_special_split = ["。", "！", "!", "?", "？", "……", "......"];
       let other_nodes = [];
       let f_nodes_one = [];
       let f_nodes_two = [];
@@ -78,8 +79,11 @@ export default {
         let isT_two = false;
         let isT_three = false;
         let isT_four = false;
-        x.innerHTML = x.innerText.replace(/&nbsp;/g, "");
+        console.log(x.innerText);
+        x.innerHTML = x.innerText.replace(/\s/g, "");
+        console.log(x.innerHTML);
         x.innerHTML = x.innerHTML.replace(/\s/g, "");
+        console.log(x.innerHTML);
         arr_one.forEach(t_one => {
           if (x.innerHTML.indexOf(t_one) > -1) {
             isT_one = true;
@@ -117,48 +121,163 @@ export default {
         x.innerHTML = html_arr.join("");
         // return;
         if (isT_one) {
-          let isIncludeDot = x.innerHTML.indexOf("“") > -1;
+          // 一级标题
+          let e_num = -1;
+          let s_tag = "";
+          let isExit = [];
+          title_special_split.forEach(s_s => {
+            if (x.innerHTML.indexOf(s_s) > -1) {
+              let index_num = x.innerHTML.indexOf(s_s);
+              isExit.push({
+                name: s_s,
+                num: index_num
+              });
+            }
+          });
+          if (isExit.length) {
+            let sortE = isExit.sort((a, b) => a.num - b.num);
+            s_tag = sortE[0].name;
+            e_num = sortE[0].num;
+            //如果s_tag有值，则说明需分段处理,最多两段
+            let add_num = s_tag.length;
+            let inner_one = x.innerHTML.slice(0, e_num + add_num);
+            let inner_two = x.innerHTML.slice(e_num + add_num);
+            let isIncludeDot_one = inner_one.indexOf("“") > -1;
+            let isIncludeDot_two = inner_two.indexOf("“") > -1;
+            let template_one = `
+            <span style="mso-spacerun:'yes';font-family:黑体;color:#000;font-size:16.0000pt;mso-font-kerning:1.0000pt;">
+            <font face="黑体">${
+              isIncludeDot_one ? inner_one.split("“")[0] : inner_one
+            }</font>${
+              isIncludeDot_one ? "“" + inner_one.split("“")[1] : ""
+            }</span>`;
+            let template_two = `
+            <span style="mso-spacerun:'yes';font-family:仿宋;color:#000;font-size:16.0000pt;mso-font-kerning:1.0000pt;">
+            <font face="仿宋">${
+              isIncludeDot_two ? inner_two.split("“")[0] : inner_two
+            }</font>${
+              isIncludeDot_two ? "“" + inner_two.split("“")[1] : ""
+            }</span>`;
+            let comp = `
+            <p class="MsoNormal" align="justify" style="text-indent:32.0000pt;text-align:justify;text-justify:inter-ideograph;mso-list:l0 level1 lfo1;">
+            ${template_one}${template_two}
+            <span style="mso-spacerun:'yes';font-family:仿宋;font-size:16.0000pt;mso-font-kerning:1.0000pt;"><o:p></o:p></span></p>
+            `;
+            container.innerHTML += comp;
+          } else {
+            //没有则只处理双引号
+            let isIncludeDot = x.innerHTML.indexOf("“") > -1;
             template = `
             <p class="MsoNormal" align="justify" style="text-indent:32.0000pt;text-align:justify;text-justify:inter-ideograph;">
             <span style="mso-spacerun:'yes';font-family:黑体;color:#000;font-size:16.0000pt;mso-font-kerning:1.0000pt;">
-            <font face="黑体">${isIncludeDot ? x.innerHTML.split("“")[0] : x.innerHTML}</font>${isIncludeDot ? "“" + x.innerHTML.split("“")[1] : ""}</span><span style="mso-spacerun:'yes';font-family:黑体;font-size:16.0000pt;mso-font-kerning:1.0000pt;"><o:p></o:p></span></p>
+            <font face="黑体">${
+              isIncludeDot ? x.innerHTML.split("“")[0] : x.innerHTML
+            }</font>${
+              isIncludeDot ? "“" + x.innerHTML.split("“")[1] : ""
+            }</span><span style="mso-spacerun:'yes';font-family:黑体;font-size:16.0000pt;mso-font-kerning:1.0000pt;"><o:p></o:p></span></p>
             `;
-          container.innerHTML += template;
+            container.innerHTML += template;
+          }
+          //
         } else if (isT_two) {
-          let isIncludeDot = x.innerHTML.indexOf("“") > -1;
-          template = `
+          // 二级标题
+          let e_num = -1;
+          let s_tag = "";
+          let isExit = [];
+          title_special_split.forEach(s_s => {
+            if (x.innerHTML.indexOf(s_s) > -1) {
+              let index_num = x.innerHTML.indexOf(s_s);
+              isExit.push({
+                name: s_s,
+                num: index_num
+              });
+            }
+          });
+          if (isExit.length) {
+            let sortE = isExit.sort((a, b) => a.num - b.num);
+            s_tag = sortE[0].name;
+            e_num = sortE[0].num;
+            //如果s_tag有值，则说明需分段处理,最多两段
+            let add_num = s_tag.length;
+            let inner_one = x.innerHTML.slice(0, e_num + add_num);
+            let inner_two = x.innerHTML.slice(e_num + add_num);
+            let isIncludeDot_one = inner_one.indexOf("“") > -1;
+            let isIncludeDot_two = inner_two.indexOf("“") > -1;
+            let template_one = `
+            <span style="mso-spacerun:'yes';font-family:楷体;color:#000;font-size:16.0000pt;mso-font-kerning:1.0000pt;">
+            <font face="楷体">${
+              isIncludeDot_one ? inner_one.split("“")[0] : inner_one
+            }</font>${
+              isIncludeDot_one ? "“" + inner_one.split("“")[1] : ""
+            }</span>`;
+            let template_two = `
+            <span style="mso-spacerun:'yes';font-family:仿宋;color:#000;font-size:16.0000pt;mso-font-kerning:1.0000pt;">
+            <font face="仿宋">${
+              isIncludeDot_two ? inner_two.split("“")[0] : inner_two
+            }</font>${
+              isIncludeDot_two ? "“" + inner_two.split("“")[1] : ""
+            }</span>`;
+            let comp = `
+            <p class="MsoNormal" align="justify" style="text-indent:32.0000pt;text-align:justify;text-justify:inter-ideograph;mso-list:l0 level1 lfo1;">
+            ${template_one}${template_two}
+            <span style="mso-spacerun:'yes';font-family:仿宋_GB2312;font-size:16.0000pt;mso-font-kerning:1.0000pt;"><o:p></o:p></span></p>
+            `;
+            container.innerHTML += comp;
+          } else {
+            //没有则只处理双引号
+            let isIncludeDot = x.innerHTML.indexOf("“") > -1;
+            template = `
             <p class="MsoNormal" align="justify" style="text-indent:32.0000pt;text-align:justify;text-justify:inter-ideograph;">
             <span style="mso-spacerun:'yes';font-family:楷体;color:#000;font-size:16.0000pt;mso-font-kerning:1.0000pt;">
-            <font face="楷体">${isIncludeDot ? x.innerHTML.split("“")[0] : x.innerHTML}</font>${isIncludeDot ? "“" + x.innerHTML.split("“")[1] : ""}</span><span style="mso-spacerun:'yes';font-family:楷体;font-size:16.0000pt;mso-font-kerning:1.0000pt;"><o:p></o:p></span></p>
+            <font face="楷体">${
+              isIncludeDot ? x.innerHTML.split("“")[0] : x.innerHTML
+            }</font>${
+              isIncludeDot ? "“" + x.innerHTML.split("“")[1] : ""
+            }</span><span style="mso-spacerun:'yes';font-family:楷体;font-size:16.0000pt;mso-font-kerning:1.0000pt;"><o:p></o:p></span></p>
             `;
-          container.innerHTML += template;
+            container.innerHTML += template;
+          }
+          //
         } else if (isT_three) {
+          // 三级标题
           let isIncludeDot = x.innerHTML.indexOf("“") > -1;
           template = `
             <p class="MsoNormal" align="justify" style="text-indent:32.0000pt;text-align:justify;text-justify:inter-ideograph;">
             <span style="mso-spacerun:'yes';font-family:仿宋;color:#000;font-size:16.0000pt;mso-font-kerning:1.0000pt;">
-            <font face="仿宋">${isIncludeDot ? x.innerHTML.split("“")[0] : x.innerHTML}</font>${isIncludeDot ? "“" + x.innerHTML.split("“")[1] : ""}</span><span style="mso-spacerun:'yes';font-family:仿宋;font-size:16.0000pt;mso-font-kerning:1.0000pt;"><o:p></o:p></span></p>
+            <font face="仿宋">${
+              isIncludeDot ? x.innerHTML.split("“")[0] : x.innerHTML
+            }</font>${
+            isIncludeDot ? "“" + x.innerHTML.split("“")[1] : ""
+          }</span><span style="mso-spacerun:'yes';font-family:仿宋;font-size:16.0000pt;mso-font-kerning:1.0000pt;"><o:p></o:p></span></p>
             `;
           container.innerHTML += template;
         } else if (isT_four) {
+          // 四级标题
           let isIncludeDot = x.innerHTML.indexOf("“") > -1;
           template = `
             <p class="MsoNormal" align="justify" style="text-indent:32.0000pt;text-align:justify;text-justify:inter-ideograph;">
             <span style="mso-spacerun:'yes';font-family:仿宋;color:#000;font-size:16.0000pt;mso-font-kerning:1.0000pt;">
-            <font face="仿宋">${isIncludeDot ? x.innerHTML.split("“")[0] : x.innerHTML}</font>${isIncludeDot ? "“" + x.innerHTML.split("“")[1] : ""}</span><span style="mso-spacerun:'yes';font-family:仿宋;font-size:16.0000pt;mso-font-kerning:1.0000pt;"><o:p></o:p></span></p>
+            <font face="仿宋">${
+              isIncludeDot ? x.innerHTML.split("“")[0] : x.innerHTML
+            }</font>${
+            isIncludeDot ? "“" + x.innerHTML.split("“")[1] : ""
+          }</span><span style="mso-spacerun:'yes';font-family:仿宋;font-size:16.0000pt;mso-font-kerning:1.0000pt;"><o:p></o:p></span></p>
             `;
           container.innerHTML += template;
         } else {
           let isIncludeDot = x.innerHTML.indexOf("“") > -1;
-        template = `
+          template = `
             <p class="MsoNormal" align="justify" style="text-indent:32.0000pt;text-align:justify;text-justify:inter-ideograph;">
             <span style="mso-spacerun:'yes';font-family:仿宋;color:#000;font-size:16.0000pt;mso-font-kerning:1.0000pt;">
-            <font face="仿宋">${isIncludeDot ? x.innerHTML.split("“")[0] : x.innerHTML}</font>${isIncludeDot ? "“" + x.innerHTML.split("“")[1] : ""}</span><span style="mso-spacerun:'yes';font-family:仿宋;font-size:16.0000pt;mso-font-kerning:1.0000pt;"><o:p></o:p></span></p>
+            <font face="仿宋">${
+              isIncludeDot ? x.innerHTML.split("“")[0] : x.innerHTML
+            }</font>${
+            isIncludeDot ? "“" + x.innerHTML.split("“")[1] : ""
+          }</span><span style="mso-spacerun:'yes';font-family:仿宋;font-size:16.0000pt;mso-font-kerning:1.0000pt;"><o:p></o:p></span></p>
             `;
           container.innerHTML += template;
         }
       });
-
 
       //自动复制到粘贴板
       // const body = this.$el.querySelector("#container").innerHTML;
