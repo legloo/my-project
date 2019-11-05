@@ -1,5 +1,6 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
+import "babel-polyfill"
 import Vue from 'vue'
 import App from './App'
 import router from './router'
@@ -20,3 +21,14 @@ new Vue({
   components: { App },
   template: '<App/>'
 })
+if (
+  '-ms-scroll-limit' in document.documentElement.style && 
+  '-ms-ime-align' in document.documentElement.style
+) { // detect it's IE11
+  window.addEventListener("hashchange", function(event) {
+    var currentPath = window.location.hash.slice(1);
+    if (store.state.route.path !== currentPath) {
+      router.push(currentPath)
+    }
+  }, false)
+}

@@ -1,20 +1,26 @@
 <template>
   <div class="e_container">
-    <div class="edit_container">
-      <quill-editor
-        v-model="content"
-        ref="myQuillEditor"
-        :options="editorOption"
-        @blur="onEditorBlur($event)"
-        @change="onEditorChange($event)"
-      ></quill-editor>
-      <p class="onblur" @click="clickSelf">开始格式化</p>
-
-      <!-- <div class="tips">
-        <p v-for="(item,index) in tips" :key="index+'tips'">{{item}}</p>
-      </div>-->
+    <div class="i_docker">
+      <iframe
+        style="width: 100%;height: 100%;border-right: 1px solid #d2c7c7;"
+        src="http://47.106.218.114/wordformat/demo/editindex.html?cmd=1"
+        id="iframe"
+        frameborder="0"
+      ></iframe>
     </div>
-    <div id="container" class="Section0" style="layout-grid:15.6000pt;"></div>
+    <div class="a_docker">
+      <div class="edit_container">
+        <quill-editor
+          v-model="content"
+          ref="myQuillEditor"
+          :options="editorOption"
+          @blur="onEditorBlur($event)"
+          @change="onEditorChange($event)"
+        ></quill-editor>
+        <p class="onblur" @click="clickSelf">开始格式化</p>
+      </div>
+      <div id="container" class="Section0" style="layout-grid:15.6000pt;"></div>
+    </div>
   </div>
 </template>
 
@@ -44,7 +50,8 @@ export default {
       ]
     };
   },
-  mounted() {},
+  mounted() {
+  },
   methods: {
     clickSelf() {
       if (!this.content) {
@@ -315,11 +322,22 @@ export default {
   position: relative;
   display: flex;
   flex-direction: row;
-  padding: 20px;
+  // padding: 20px;
+  height: 100vh;
+}
+.i_docker {
+  // border-top: 1px solid #b7b5b5;
+  flex: 0 0 70%;
+}
+.a_docker {
+  // border-top: 1px solid #b7b5b5;
+  flex: 0 0 30%;
+  display: flex;
+  flex-direction: column;
 }
 .edit_container {
   border-top: 1px solid #b7b5b5;
-  flex: 0 0 50%;
+  border-bottom: 1px solid #b7b5b5;
 }
 .ql-editor {
   height: 20vw;
@@ -526,7 +544,6 @@ table.MsoNormalTable {
 }
 .Section0 {
   page: Section0;
-  flex: 0 0 50%;
   padding-left: 20px;
 }
 </style>
