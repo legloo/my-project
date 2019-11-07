@@ -9,6 +9,7 @@ import 'iview/dist/styles/iview.css';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import VueJsonp from 'vue-jsonp'
+
 Vue.use(VueJsonp,5000)
 
 Vue.use(iView);

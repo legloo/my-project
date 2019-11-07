@@ -1,17 +1,11 @@
 <template>
   <div class="e_container">
     <div class="i_docker">
-      <iframe
-        v-show="isIE"
-        style="width: 100%;height: 98%;border-right: 1px solid #d2c7c7;"
-        src="http://47.106.218.114/wordformat/demo/editindex.html?cmd=1"
-        id="iframe"
-        frameborder="0"
-      ></iframe>
-      <p v-show="!isIE" class="not_ie">请使用IE浏览器打开</p>
+      <p class="download_tips">请打开下方文件，在模板内编辑，正文内容可在右边进行格式刷。</p>
+      <button class="download_btn" @click="tem_download">模板文件</button>
     </div>
     <div class="a_docker">
-      <div class="btn_group">
+      <div class="btn_group" style="margin: 11px 0;">
         <button
           class="d_btn"
           :class="{d_btn_active:currentDocker === 'tips'}"
@@ -33,7 +27,12 @@
         ></quill-editor>
         <div class="blue_g">
           <p class="onblur" @click="clickSelf">开始格式刷</p>
-          <p class="onblur btn" @click="copy" data-clipboard-target="#container">复制</p>
+          <p
+            class="onblur btn"
+            style="background-color: #158a0e;"
+            @click="copy"
+            data-clipboard-target="#container"
+          >复制</p>
         </div>
       </div>
       <div class="tips" v-show="currentDocker === 'tips'">
@@ -48,29 +47,19 @@
     </div>
   </div>
 </template>
-<script>
-// let docx_name = location.href.split('?')[1].split('=')[1];
-// document.getElementById('iframe').onload = function () {
-// 	var child = document.getElementById('iframe').contentWindow;
-// 	let url = 'http://47.106.218.114/docx/' + docx_name;
-// 	child.open_doc(url);
-// };
-</script>
 
 <script>
 import { quillEditor } from "vue-quill-editor";
 import clipboard from "clipboard";
-import { resolve } from "url";
-import { reject } from "q";
 export default {
   components: {
     quillEditor
   },
   data() {
     return {
+      tem_url: "",
       Clipboard: null,
       currentDocker: "editor",
-      isIE: true,
       editor: null, // 富文本编辑器对象
       content: ``, // 富文本编辑器默认内容
       editorOption: {
@@ -120,15 +109,38 @@ export default {
     };
   },
   mounted() {
-    let agent = this.IEVersion();
-    if (agent < 0) {
-      this.isIE = false;
-    }
     let self = this;
     self.Clipboard = new clipboard(".btn");
+    let query = self.$route.query;
+    if (query.docx_name) {
+      self.tem_url = `http://47.106.218.114/docx/${query.docx_name}`;
+    } else {
+      this.$notify({
+        title: "提示",
+        message: "找不到文件名",
+        type: "error"
+      });
+    }
   },
   methods: {
+    tem_download() {
+      if (!this.tem_url) {
+        this.$notify({
+          title: "提示",
+          message: "找不到文件地址",
+          type: "error"
+        });
+        return;
+      }
+      const a = document.createElement("a");
+      a.style.display = "none";
+      a.download = "模板";
+      a.href = this.tem_url;
+      a.click();
+      document.body.removeChild(a);
+    },
     async copy() {
+      console.log(this.Clipboard);
       let res = await new Promise((resolve, reject) => {
         this.Clipboard.on("success", e => {
           resolve("success");
@@ -406,51 +418,40 @@ export default {
       this.editor = e;
     },
     // 内容改变事件
-    onEditorChange(e) {},
-    IEVersion() {
-      let userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
-      let isIE =
-        userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1; //判断是否IE<11浏览器
-      let isEdge = userAgent.indexOf("Edge") > -1 && !isIE; //判断是否IE的Edge浏览器
-      let isIE11 =
-        userAgent.indexOf("Trident") > -1 && userAgent.indexOf("rv:11.0") > -1;
-      if (isIE) {
-        let reIE = new RegExp("MSIE (\\d+\\.\\d+);");
-        reIE.test(userAgent);
-        let fIEVersion = parseFloat(RegExp["$1"]);
-        if (fIEVersion == 7) {
-          return 7;
-        } else if (fIEVersion == 8) {
-          return 8;
-        } else if (fIEVersion == 9) {
-          return 9;
-        } else if (fIEVersion == 10) {
-          return 10;
-        } else {
-          return 6; //IE版本<=7
-        }
-      } else if (isEdge) {
-        return "edge"; //edge
-      } else if (isIE11) {
-        return 11; //IE11
-      } else {
-        return -1; //不是ie浏览器
-      }
-    }
+    onEditorChange(e) {}
   }
 };
 </script>
 
-<style scoped>
-#app .bpm-container {
-  min-width: unset !important;
-}
-</style>
 
-<style lang="less" scoped>
+<style lang="less">
+.download_tips {
+  font-size: 15px;
+  /* text-align: center; */
+  /* margin-top: 3vw; */
+  color: #888787;
+  width: 13vw;
+  margin: 4vw auto;
+}
+.download_btn {
+  display: block;
+  margin: 4vw auto;
+  border: none;
+  background: #57a3f3;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 120px;
+  height: 34px;
+  border-radius: 5px;
+  font-size: 15px;
+  -webkit-box-shadow: 0px 0px 6px 3px #eee;
+  box-shadow: 0px 0px 6px 3px #eee;
+  color: #fff;
+}
 .blue_g {
   display: flex;
   flex-direction: row;
+  justify-content: flex-start;
 }
 .d_btn_active {
   background-color: #57a3f3 !important;
@@ -459,12 +460,14 @@ export default {
   border-radius: 5px;
   border: none;
   background-color: #abafb3;
+  -webkit-box-sizing: border-box;
   box-sizing: border-box;
-  width: 20%;
-  height: 39px;
-  font-size: 1.2vw;
+  height: 34px;
+  font-size: 15px;
   margin: 5px;
   color: #fff;
+  box-shadow: 0 0 8px 5px #eee;
+  padding: 0 13px;
 }
 .not_ie {
   font-size: 27px;
@@ -480,35 +483,42 @@ export default {
   height: 100vh;
 }
 .i_docker {
-  // border-top: 1px solid #b7b5b5;
-  flex: 0 0 60%;
+  flex: 0 0 19%;
+  border-right: 1px solid #eee;
 }
 .a_docker {
   // border-top: 1px solid #b7b5b5;
-  flex: 0 0 40%;
+  flex: 0 0 68%;
   display: flex;
   flex-direction: column;
+  padding-left: 20px;
 }
 .edit_container {
-  // border-top: 1px solid #b7b5b5;
-  // border-bottom: 1px solid #b7b5b5;
-  // border-left: 1px solid #b7b5b5;
+  width: 60vw;
+  //   border-top: 1px solid #b7b5b5;
+  //   border-bottom: 1px solid #b7b5b5;
+  //   border-left: 1px solid #b7b5b5;
+}
+.ql-snow {
+  border-top: 1px solid #ccc !important;
 }
 .ql-editor {
   height: 20vw;
-  width: 39vw;
+  word-break: break-word;
 }
 .onblur {
-  width: 10vw;
-  margin: 10px auto;
+  margin: 10px 10px 10px 0;
   text-align: center;
   background-color: #00a3fb;
   font-size: 15px;
-  border-radius: 10px;
+  border-radius: 5px;
   color: #fff;
   cursor: pointer;
-  padding: 8px 0;
+  padding: 5px 22px;
+  box-sizing: border-box;
+  box-shadow: 0 0 11px 5px #e9e9e9;
 }
+
 .ql-toolbar {
   display: none;
 }
@@ -705,9 +715,8 @@ table.MsoNormalTable {
 }
 .Section0 {
   page: Section0;
-  padding-left: 20px;
   height: 45%;
-  width: 40vw;
+  width: 60vw;
   overflow: scroll;
   word-wrap: break-word;
 }

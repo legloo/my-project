@@ -10,6 +10,7 @@ import HelloWorld from '@/components/HelloWorld'
 // import better_scroll from '@/views/better-scroll'
 // import scroll from '@/views/scroll'
 import word from '@/views/word'
+import wordv2 from '@/views/wordv2'
 
 
 Vue.use(Router)
@@ -62,9 +63,14 @@ export default new Router({
     //   component: scroll
     // },
     {
+      path: '/word_old',
+      name: 'word_old',
+      component: word
+    },
+    {
       path: '/word',
       name: 'word',
-      component: word
+      component: wordv2
     }
   ]
 })
