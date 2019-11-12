@@ -11,6 +11,7 @@ import HelloWorld from '@/components/HelloWorld'
 // import scroll from '@/views/scroll'
 import word from '@/views/word'
 import wordv2 from '@/views/wordv2'
+import china from '@/views/china-map'
 
 
 Vue.use(Router)
@@ -71,6 +72,11 @@ export default new Router({
       path: '/word',
       name: 'word',
       component: wordv2
+    },
+    {
+      path: '/china-map',
+      name: 'china-map',
+      component: china
     }
   ]
 })
