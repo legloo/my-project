@@ -22,6 +22,7 @@
     "clipboard": "^2.0.4",
     "clipboard-polyfill": "^2.8.6",
     "cube-ui": "^1.12.30",
+    "echarts": "^4.4.0",
     "element-ui": "^2.10.1",
     "iview": "^3.4.2",
     "lottery-utils": "^1.0.3",
