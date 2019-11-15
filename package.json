@@ -30,6 +30,7 @@
     "netease-nim-web-sdk": "^1.0.4",
     "vant": "^2.1.8",
     "vue": "^2.5.2",
+    "vue-baidu-map": "^0.21.22",
     "vue-count-diy": "^1.0.1",
     "vue-count-to": "^1.0.13",
     "vue-jsonp": "^0.1.8",

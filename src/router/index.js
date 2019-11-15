@@ -12,6 +12,8 @@ import HelloWorld from '@/components/HelloWorld'
 import word from '@/views/word'
 import wordv2 from '@/views/wordv2'
 import china from '@/views/china-map'
+import aupu_map from '@/views/aupu-map'
+import aupu_map2 from '@/views/aupu-map2'
 
 
 Vue.use(Router)
@@ -77,6 +79,16 @@ export default new Router({
       path: '/china-map',
       name: 'china-map',
       component: china
+    },
+    {
+      path: '/aupu-map',
+      name: 'aupu-map',
+      component: aupu_map
+    },
+    {
+      path: '/aupu-mapv2',
+      name: 'aupu-mapv2',
+      component: aupu_map2
     }
   ]
 })

@@ -9,7 +9,12 @@ import 'iview/dist/styles/iview.css';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import VueJsonp from 'vue-jsonp'
+import BaiduMap from 'vue-baidu-map'
 
+Vue.use(BaiduMap, {
+  // ak 是在百度地图开发者平台申请的密钥 详见 http://lbsyun.baidu.com/apiconsole/key */
+  ak: 'gXvtKPxT33SqY0lZx9XljD4fKaVcszrA'
+})
 Vue.use(VueJsonp,5000)
 
 Vue.use(iView);
