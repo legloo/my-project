@@ -14,7 +14,8 @@
     "deploy": "scp -r dist/* root@47.111.181.175:/usr/local/nginx/html/myproject",
     "deploy-swj": "scp -r dist/* root@47.106.218.114:../data/cloudpivot/program/frontEnd/portal/wordformat/word",
     "deploy-doc": "scp -r docx/* root@47.106.218.114:../data/cloudpivot/program/frontEnd/portal/docx",
-    "deploy-word": "scp -r webapps/* root@47.106.218.114:../data/cloudpivot/program/frontEnd/portal/wordformat"
+    "deploy-word": "scp -r webapps/* root@47.106.218.114:../data/cloudpivot/program/frontEnd/portal/wordformat",
+    "deploy-aupu": "scp -r dist/* root@47.96.139.66:/data/cloudpivot/program/frontEnd/portal/aupu-extra"
   },
   "dependencies": {
     "axios": "^0.19.0",

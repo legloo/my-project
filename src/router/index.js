@@ -65,28 +65,28 @@ export default new Router({
     //   name: 'scroll',
     //   component: scroll
     // },
-    {
-      path: '/word_old',
-      name: 'word_old',
-      component: word
-    },
-    {
-      path: '/word',
-      name: 'word',
-      component: wordv2
-    },
-    {
-      path: '/china-map',
-      name: 'china-map',
-      component: china
-    },
+    // {
+    //   path: '/word_old',
+    //   name: 'word_old',
+    //   component: word
+    // },
+    // {
+    //   path: '/word',
+    //   name: 'word',
+    //   component: wordv2
+    // },
+    // {
+    //   path: '/china-map',
+    //   name: 'china-map',
+    //   component: china
+    // },
+    // {
+    //   path: '/aupu-map',
+    //   name: 'aupu-map',
+    //   component: aupu_map
+    // },
     {
       path: '/aupu-map',
-      name: 'aupu-map',
-      component: aupu_map
-    },
-    {
-      path: '/aupu-mapv2',
       name: 'aupu-mapv2',
       component: aupu_map2
     }

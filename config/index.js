@@ -11,13 +11,21 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/aupu_api': {
-        target: 'https://minipro-1254007989.cos.ap-shanghai.myqcloud.com',//接口地址
+      '/api': {
+        target: 'http://47.96.139.66:8080/api',//接口地址
         changeOrigin: true,//是否允许跨越
         pathRewrite: {
-          '^/aupu_api': '',//重写,
+          '^/api': '',//重写,
+        }
+      },
+      '/dd': {
+        target: 'https://oapi.dingtalk.com',//接口地址
+        changeOrigin: true,//是否允许跨越
+        pathRewrite: {
+          '^/dd': '',//重写,
         }
       }
+      // department/list?access_token=a1c98dbb786331d8ba98e4af8493c2e5
     },
 
     // Various Dev Server settings

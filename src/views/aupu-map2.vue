@@ -64,6 +64,8 @@ import Axios from "axios";
 export default {
   data() {
     return {
+      host: "http://47.96.139.66",
+      token:'',
       loading: null,
       map: {},
       dataList: [],
@@ -113,6 +115,10 @@ export default {
       background: "rgba(255, 255, 255, 0.5)"
     });
     this.dataList = await this.getData();
+    if (this.dataList === undefined) {
+      return;
+    }
+    console.log(this.dataList);
     this.makeOptions();
     this.user_dataList = this.deepClone(this.dataList);
     this.search();
@@ -151,7 +157,7 @@ export default {
         if (this.user_dataList[i].imgs && this.user_dataList[i].imgs.length) {
           imgs_dom = "";
           for (let x = 0; x < this.user_dataList[i].imgs.length; x++) {
-            imgs_dom += `<img class="com_img" src="${this.user_dataList[i].imgs[x]}">`;
+            imgs_dom += `<img class="com_img" src="${this.host}/api/api/aliyun/download?refId=${this.user_dataList[i].imgs[x]}&access_token=${this.token}">`;
           }
         }
         var content = `
@@ -220,7 +226,6 @@ export default {
         let current_length = this.user_dataList.filter(
           x => x.province && x.province.indexOf(provinces[i]) > -1
         ).length;
-        console.log(current_length);
         let current_color = this.color_g.filter(
           x => x[0] <= current_length && x[1] > current_length
         )[0][2];
@@ -288,10 +293,32 @@ export default {
       this.map.openInfoWindow(infoWindow, point); //开启信息窗口
     },
     async getData() {
-      let res = await Axios.get(
-        "http://30.40.63.123:8080/api/MapInfo/listPointsInfo"
-      );
-      return res.data.data;
+      try {
+         this.token = localStorage.getItem("token");
+        if (!this.token) {
+          this.loading.close();
+          this.$message.error("无用户登录信息");
+          return;
+        }
+        let config = {
+          headers: {
+            Authorization: "Bearer " + this.token
+          }
+        };
+        let res = await Axios.get(`/api/api/MapInfo/listPointsInfo`,config);
+        // let res = await Axios.get(`/api/api/organization/user/info`,config);
+        if (res.data.data) {
+          return res.data.data;
+        } else {
+          this.loading.close();
+          this.$message.error(res.message);
+          return undefined;
+        }
+      } catch (e) {
+        console.log(e.request);
+        this.loading.close();
+        this.$message.error("获取数据失败");
+      }
     },
     search() {
       this.loading = this.$loading({
@@ -300,6 +327,10 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(255, 255, 255, 0.5)"
       });
+      if (!this.user_dataList.length) {
+        this.loading.close()
+        return this.$message.info("无符合条件的门店信息");
+      }
       this.user_dataList = this.deepClone(this.dataList);
       if (this.agent_options_value && this.agent_options_value !== "全部") {
         this.user_dataList = this.user_dataList.filter(
@@ -317,6 +348,7 @@ export default {
         );
       }
       if (!this.user_dataList.length) {
+        this.loading.close()
         return this.$message.info("无符合条件的门店信息");
       }
       this.setMap();
