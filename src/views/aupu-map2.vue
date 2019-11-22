@@ -292,12 +292,15 @@ export default {
       var infoWindow = new BMap.InfoWindow(content, this.opts); // 创建信息窗口对象
       this.map.openInfoWindow(infoWindow, point); //开启信息窗口
     },
+    toLogin(){
+      window.location.href = `${this.host}/login`
+    },
     async getData() {
       try {
          this.token = localStorage.getItem("token");
         if (!this.token) {
           this.loading.close();
-          this.$message.error("无用户登录信息");
+          this.toLogin()
           return;
         }
         let config = {
@@ -318,6 +321,7 @@ export default {
         console.log(e.request);
         this.loading.close();
         this.$message.error("获取数据失败");
+        this.toLogin()
       }
     },
     search() {
