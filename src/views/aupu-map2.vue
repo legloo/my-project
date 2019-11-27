@@ -206,7 +206,9 @@ export default {
         markers: markers,
         styles: _styles
       });
+      if(this.user_dataList.length){
       this.areaColor(BMap, this.map);
+      }
     },
     areaColor(BMap, map) {
       let provinces = [
@@ -381,10 +383,6 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(255, 255, 255, 0.5)"
       });
-      if (!this.user_dataList.length) {
-        this.loading.close();
-        return this.$message.info("无符合条件的门店信息1");
-      }
       this.user_dataList = this.deepClone(this.dataList);
       const filterKeys = [
         {
@@ -418,7 +416,7 @@ export default {
       }
       if (!this.user_dataList.length) {
         this.loading.close();
-        return this.$message.info("无符合条件的门店信息2");
+        this.$message.info("无符合条件的门店信息");
       }
       this.setMap();
     },
@@ -448,7 +446,7 @@ export default {
   flex-direction: row;
 }
 .filters {
-  flex: 0 0 30%;
+  flex: 0 0 20%;
   margin-top: 100px;
 }
 /deep/ .el-form {
