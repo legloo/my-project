@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="filters">
-      <el-form :inline="true" class="demo-form-inline">
+      <el-form  class="demo-form-inline">
         <el-form-item label="代理商">
           <el-select
             v-model="agent_options_value"
@@ -44,6 +44,20 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="事业部类型">
+          <el-select
+            v-model="ownerDept_options_value"
+            :disabled="ownerDept_options_disabled"
+            placeholder="请选择"
+          >
+            <el-option
+              v-for="(item,index) in ownerDept_options"
+              :key="'term_options'+index"
+              :label="item"
+              :value="item"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button size="medium" type="primary" @click="search">查询</el-button>
           <el-button size="medium" @click="reset" type="info">重置</el-button>
@@ -65,7 +79,7 @@ export default {
   data() {
     return {
       host: "http://47.96.139.66",
-      token:'',
+      token: "",
       loading: null,
       map: {},
       dataList: [],
@@ -77,12 +91,15 @@ export default {
       agent_options: [],
       depart_options: [],
       term_options: [],
+      ownerDept_options: ["全部"],
       agent_options_value: "全部",
       depart_options_value: "全部",
       term_options_value: "全部",
+      ownerDept_options_value: "全部",
       agent_options_disabled: false,
       depart_options_disabled: false,
       term_options_disabled: false,
+      ownerDept_options_disabled: false,
       color_g: [
         [0, 1, "#F4F4F4"],
         [1, 20, "#9fc2e6"],
@@ -103,9 +120,15 @@ export default {
     this.term_options_value = query.term_options_value
       ? query.term_options_value
       : "全部";
+    this.ownerDept_options_value = query.ownerDept_options_value
+      ? query.ownerDept_options_value
+      : "全部";
     this.agent_options_disabled = query.agent_options_value ? true : false;
     this.depart_options_disabled = query.depart_options_value ? true : false;
     this.term_options_disabled = query.term_options_value ? true : false;
+    this.ownerDept_options_disabled = query.ownerDept_options_disabled
+      ? true
+      : false;
   },
   async mounted() {
     this.loading = this.$loading({
@@ -118,7 +141,6 @@ export default {
     if (this.dataList === undefined) {
       return;
     }
-    console.log(this.dataList);
     this.makeOptions();
     this.user_dataList = this.deepClone(this.dataList);
     this.search();
@@ -256,27 +278,52 @@ export default {
       this.agent_options = Array.from(
         new Set(
           this.dataList
-            .filter(x => x.agent !== null && x.agent !== "")
+            .filter(
+              x => x.agent !== null && x.agent !== "" && x.agent !== undefined
+            )
             .map(x => x.agent)
         )
       );
       this.depart_options = Array.from(
         new Set(
           this.dataList
-            .filter(x => x.department !== null && x.department !== "")
+            .filter(
+              x =>
+                x.department !== null &&
+                x.department !== "" &&
+                x.department !== undefined
+            )
             .map(x => x.department)
         )
       );
       this.term_options = Array.from(
         new Set(
           this.dataList
-            .filter(x => x.terminal !== null && x.terminal !== "")
+            .filter(
+              x =>
+                x.terminal !== null &&
+                x.terminal !== "" &&
+                x.terminal !== undefined
+            )
             .map(x => x.terminal)
+        )
+      );
+      this.ownerDept_options = Array.from(
+        new Set(
+          this.dataList
+            .filter(
+              x =>
+                x.ownerDept !== null &&
+                x.ownerDept !== "" &&
+                x.ownerDept !== undefined
+            )
+            .map(x => x.ownerDept)
         )
       );
       this.agent_options.unshift("全部");
       this.depart_options.unshift("全部");
       this.term_options.unshift("全部");
+      this.ownerDept_options.unshift("全部");
       this.select_show = true;
     },
     addClickHandler(content, marker) {
@@ -292,15 +339,15 @@ export default {
       var infoWindow = new BMap.InfoWindow(content, this.opts); // 创建信息窗口对象
       this.map.openInfoWindow(infoWindow, point); //开启信息窗口
     },
-    toLogin(){
-      window.location.href = `${this.host}/login`
+    toLogin() {
+      window.location.href = `${this.host}/login`;
     },
     async getData() {
       try {
-         this.token = localStorage.getItem("token");
+        this.token = localStorage.getItem("token");
         if (!this.token) {
           this.loading.close();
-          this.toLogin()
+          this.toLogin();
           return;
         }
         let config = {
@@ -308,7 +355,10 @@ export default {
             Authorization: "Bearer " + this.token
           }
         };
-        let res = await Axios.get(`/api/api/MapInfo/listPointsInfo`,config);
+        let res = await Axios.get(
+          `${this.host}/api/api/MapInfo/listPointsInfo`,
+          config
+        );
         // let res = await Axios.get(`/api/api/organization/user/info`,config);
         if (res.data.data) {
           return res.data.data;
@@ -321,7 +371,7 @@ export default {
         console.log(e.request);
         this.loading.close();
         this.$message.error("获取数据失败");
-        this.toLogin()
+        this.toLogin();
       }
     },
     search() {
@@ -332,28 +382,43 @@ export default {
         background: "rgba(255, 255, 255, 0.5)"
       });
       if (!this.user_dataList.length) {
-        this.loading.close()
-        return this.$message.info("无符合条件的门店信息");
+        this.loading.close();
+        return this.$message.info("无符合条件的门店信息1");
       }
       this.user_dataList = this.deepClone(this.dataList);
-      if (this.agent_options_value && this.agent_options_value !== "全部") {
-        this.user_dataList = this.user_dataList.filter(
-          x => x.agent === this.agent_options_value
-        );
-      }
-      if (this.depart_options_value && this.depart_options_value !== "全部") {
-        this.user_dataList = this.user_dataList.filter(
-          x => x.department === this.depart_options_value
-        );
-      }
-      if (this.term_options_value && this.term_options_value !== "全部") {
-        this.user_dataList = this.user_dataList.filter(
-          x => x.terminal === this.term_options_value
-        );
+      const filterKeys = [
+        {
+          localValue: "agent_options_value",
+          dataKey: "agent"
+        },
+        {
+          localValue: "depart_options_value",
+          dataKey: "department"
+        },
+        {
+          localValue: "term_options_value",
+          dataKey: "terminal"
+        },
+        {
+          localValue: "ownerDept_options_value",
+          dataKey: "ownerDept"
+        }
+      ];
+      for (let i = 0; i < filterKeys.length; i++) {
+          console.log(this[filterKeys[i].localValue])
+
+        if (
+          this[filterKeys[i].localValue] &&
+          this[filterKeys[i].localValue] !== "全部"
+        ) {
+          this.user_dataList = this.user_dataList.filter(
+            x => x[filterKeys[i].dataKey] === this[filterKeys[i].localValue]
+          );
+        }
       }
       if (!this.user_dataList.length) {
-        this.loading.close()
-        return this.$message.info("无符合条件的门店信息");
+        this.loading.close();
+        return this.$message.info("无符合条件的门店信息2");
       }
       this.setMap();
     },
@@ -383,7 +448,7 @@ export default {
   flex-direction: row;
 }
 .filters {
-  flex: 0 0 20%;
+  flex: 0 0 30%;
   margin-top: 100px;
 }
 /deep/ .el-form {
@@ -398,5 +463,15 @@ export default {
 .map {
   height: 100vh;
   width: 100%;
+}
+/deep/ .demo-form-inline{
+  .el-form-item__label{
+    float: none;
+    display: inline-block
+  }
+  .el-form-item__content{
+    display: inline-block;
+    vertical-align: top;
+  }
 }
 </style>

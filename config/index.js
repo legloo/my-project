@@ -11,13 +11,13 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/api': {
-        target: 'http://47.96.139.66:8080/api',//接口地址
-        changeOrigin: true,//是否允许跨越
-        pathRewrite: {
-          '^/api': '',//重写,
-        }
-      },
+      // '/api': {
+      //   target: 'http://47.96.139.66:8080/api',//接口地址
+      //   changeOrigin: true,//是否允许跨越
+      //   pathRewrite: {
+      //     '^/api': '',//重写,
+      //   }
+      // },
       '/dd': {
         target: 'https://oapi.dingtalk.com',//接口地址
         changeOrigin: true,//是否允许跨越
