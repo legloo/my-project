@@ -77,6 +77,11 @@ export default new Router({
       path: '/china-map',
       name: 'china-map',
       component: china
+    },
+    {
+      path: '/signature',
+      name: 'signature',
+      component: () => import('../views/signature.vue')
     }
   ]
 })
