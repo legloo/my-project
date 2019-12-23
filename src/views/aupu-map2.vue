@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="filters">
-      <el-form  class="demo-form-inline">
+      <el-form class="demo-form-inline">
         <el-form-item label="代理商">
           <el-select
             v-model="agent_options_value"
@@ -44,20 +44,16 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="事业部类型">
-          <el-select
-            v-model="ownerDept_options_value"
-            :disabled="ownerDept_options_disabled"
-            placeholder="请选择"
-          >
+        <!-- <el-form-item label="事业部类型">
+          <el-select v-model="ownerDept_options_value" :disabled="true" placeholder="请选择">
             <el-option
               v-for="(item,index) in ownerDept_options"
               :key="'term_options'+index"
-              :label="item"
-              :value="item"
+              :label="item.name"
+              :value="item.value"
             ></el-option>
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item>
           <el-button size="medium" type="primary" @click="search">查询</el-button>
           <el-button size="medium" @click="reset" type="info">重置</el-button>
@@ -120,15 +116,23 @@ export default {
     this.term_options_value = query.term_options_value
       ? query.term_options_value
       : "全部";
-    this.ownerDept_options_value = query.ownerDept_options_value
-      ? query.ownerDept_options_value
-      : "全部";
+    // this.ownerDept_options_value = query.ownerDept_options_value
+    //   ? query.ownerDept_options_value
+    //   : "全部";
     this.agent_options_disabled = query.agent_options_value ? true : false;
     this.depart_options_disabled = query.depart_options_value ? true : false;
     this.term_options_disabled = query.term_options_value ? true : false;
-    this.ownerDept_options_disabled = query.ownerDept_options_disabled
-      ? true
-      : false;
+    // this.ownerDept_options_disabled = query.ownerDept_options_disabled
+    //   ? true
+    //   : false;
+    // this.ownerDept_options_value = query.type
+    if(!query.type){
+      return  this.$message.error("不合法的地址");
+    }
+    if(!['electric','integration'].includes(query.type)){
+      return  this.$message.error("type error,please check");
+    }
+    this.ownerDept_options_value = query.type;
   },
   async mounted() {
     this.loading = this.$loading({
@@ -206,8 +210,8 @@ export default {
         markers: markers,
         styles: _styles
       });
-      if(this.user_dataList.length){
-      this.areaColor(BMap, this.map);
+      if (this.user_dataList.length) {
+        this.areaColor(BMap, this.map);
       }
     },
     areaColor(BMap, map) {
@@ -310,18 +314,28 @@ export default {
             .map(x => x.terminal)
         )
       );
-      this.ownerDept_options = Array.from(
-        new Set(
-          this.dataList
-            .filter(
-              x =>
-                x.ownerDept !== null &&
-                x.ownerDept !== "" &&
-                x.ownerDept !== undefined
-            )
-            .map(x => x.ownerDept)
-        )
-      );
+      // this.ownerDept_options = Array.from(
+      //   new Set(
+      //     this.dataList
+      //       .filter(
+      //         x =>
+      //           x.ownerDept !== null &&
+      //           x.ownerDept !== "" &&
+      //           x.ownerDept !== undefined
+      //       )
+      //       .map(x => x.ownerDept)
+      //   )
+      // );
+      this.ownerDept_options = [
+        {
+          name: "电器事业部",
+          value: "electric"
+        },
+        {
+          name: "集成事业部",
+          value: "integration"
+        }
+      ];
       this.agent_options.unshift("全部");
       this.depart_options.unshift("全部");
       this.term_options.unshift("全部");
@@ -357,8 +371,9 @@ export default {
             Authorization: "Bearer " + this.token
           }
         };
+        let num = this.ownerDept_options_value === 'electric' ? 0 : 1
         let res = await Axios.get(
-          `${this.host}/api/api/MapInfo/listPointsInfo`,
+          `${this.host}/api/api/MapInfo/listPointsInfo?type=${num}`,
           config
         );
         // let res = await Axios.get(`/api/api/organization/user/info`,config);
@@ -396,14 +411,14 @@ export default {
         {
           localValue: "term_options_value",
           dataKey: "terminal"
-        },
-        {
-          localValue: "ownerDept_options_value",
-          dataKey: "ownerDept"
         }
+        // {
+        //   localValue: "ownerDept_options_value",
+        //   dataKey: "ownerDept"
+        // }
       ];
       for (let i = 0; i < filterKeys.length; i++) {
-          console.log(this[filterKeys[i].localValue])
+        console.log(this[filterKeys[i].localValue]);
 
         if (
           this[filterKeys[i].localValue] &&
@@ -462,12 +477,12 @@ export default {
   height: 100vh;
   width: 100%;
 }
-/deep/ .demo-form-inline{
-  .el-form-item__label{
+/deep/ .demo-form-inline {
+  .el-form-item__label {
     float: none;
-    display: inline-block
+    display: inline-block;
   }
-  .el-form-item__content{
+  .el-form-item__content {
     display: inline-block;
     vertical-align: top;
   }
