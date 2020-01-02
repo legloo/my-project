@@ -11,11 +11,11 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/tencent_cloud_source': {
-        target: 'https://minipro-1254007989.cos.ap-shanghai.myqcloud.com',//接口地址
+      '/domain': {
+        target: 'http://localhost:3000',//接口地址
         changeOrigin: true,//是否允许跨越
         pathRewrite: {
-          '^/tencent_cloud_source': '',//重写,
+          '^/domain': '',//重写,
         }
       }
     },

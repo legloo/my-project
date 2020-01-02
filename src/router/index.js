@@ -65,6 +65,11 @@ export default new Router({
       path: '/word',
       name: 'word',
       component: word
+    },
+    {
+      path: '/authineLogs',
+      name: 'authineLogs',
+      component: () => import('@/views/authine-logs.vue')
     }
   ]
 })
