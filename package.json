@@ -11,7 +11,7 @@
     "e2e": "node test/e2e/runner.js",
     "test": "npm run unit && npm run e2e",
     "build": "node build/build.js",
-    "deploy": "scp -r -P 8080 dist/* root@localhost:/usr/local/Cellar/nginx/1.17.6/html"
+    "deploy": "scp -r  dist/* /usr/local/Cellar/nginx/1.17.6/html"
   },
   "dependencies": {
     "axios": "^0.19.0",
