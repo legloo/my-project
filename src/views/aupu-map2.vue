@@ -1,9 +1,12 @@
 <template>
   <div class="container">
     <div class="filters">
-      <el-form class="demo-form-inline">
+      <el-form :label-position="'top'" style="width: 58%;
+    margin: auto;
+}">
         <el-form-item label="代理商">
           <el-select
+            filterable
             v-model="agent_options_value"
             :disabled="agent_options_disabled"
             placeholder="请选择"
@@ -44,6 +47,20 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="终端所属">
+          <el-select
+            v-model="term_belong_options_value"
+            :disabled="term_belong_options_disabled"
+            placeholder="请选择"
+          >
+            <el-option
+              v-for="(item,index) in term_belong_options"
+              :key="'term_belong_options'+index"
+              :label="item"
+              :value="item"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <!-- <el-form-item label="事业部类型">
           <el-select v-model="ownerDept_options_value" :disabled="true" placeholder="请选择">
             <el-option
@@ -53,10 +70,17 @@
               :value="item.value"
             ></el-option>
           </el-select>
-        </el-form-item> -->
+        </el-form-item>-->
         <el-form-item>
           <el-button size="medium" type="primary" @click="search">查询</el-button>
           <el-button size="medium" @click="reset" type="info">重置</el-button>
+        </el-form-item>
+        <el-form-item>
+          <div v-for="(item,index) in get_dif_icons" :key="'diff_coin'+index">
+            <span>{{item.name}}:</span>
+            <img style="vertical-align: sub;
+    width: 20px;" :src="item.value" alt />
+          </div>
         </el-form-item>
       </el-form>
     </div>
@@ -72,8 +96,52 @@ import BMap from "BMap";
 import { setTimeout } from "timers";
 import Axios from "axios";
 export default {
+  computed: {
+    get_dif_icons() {
+      let dc = [];
+      if (!this.diff_icon) {
+        return [];
+      }
+      console.log(123)
+      for (let key in this.diff_icon) {
+        let item = {
+          name: key,
+          value: this.diff_icon[key]
+        };
+        dc.push(item);
+      }
+      if (this.ownerDept_options_value === "electric") {
+        return dc;
+      }
+      if (this.ownerDept_options_value === "integration") {
+        return dc;
+      }
+    }
+  },
   data() {
     return {
+      diff_icon: null,
+      e_dif_icon: {
+        专营店: "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_org.png",
+        专卖店: "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_red.png",
+        KA: "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_blue.png",
+        照明综合店:
+          "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_yellow.png",
+        家居综合店:
+          "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_purpo.png",
+        五金综合店:
+          "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_green.png",
+        分销网点:
+          "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_sblue.png"
+      },
+      i_dif_icon: {
+        集成专卖店:
+          "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_org.png",
+        家装展厅:
+          "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_red.png",
+        KA: "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_blue.png",
+        超市: "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_yellow.png"
+      },
       host: "http://47.96.139.66",
       token: "",
       loading: null,
@@ -96,6 +164,10 @@ export default {
       depart_options_disabled: false,
       term_options_disabled: false,
       ownerDept_options_disabled: false,
+
+      term_belong_options_value: "全部",
+      term_belong_options_disabled: false,
+      term_belong_options: ["全部", "代理商", "分销商"],
       color_g: [
         [0, 1, "#F4F4F4"],
         [1, 20, "#9fc2e6"],
@@ -126,13 +198,19 @@ export default {
     //   ? true
     //   : false;
     // this.ownerDept_options_value = query.type
-    if(!query.type){
-      return  this.$message.error("不合法的地址");
+    if (!query.type) {
+      return this.$message.error("不合法的地址");
     }
-    if(!['electric','integration'].includes(query.type)){
-      return  this.$message.error("type error,please check");
+    if (!["electric", "integration"].includes(query.type)) {
+      return this.$message.error("type error,please check");
     }
     this.ownerDept_options_value = query.type;
+    if (this.ownerDept_options_value === "electric") {
+      this.diff_icon = this.e_dif_icon;
+    }
+    if (this.ownerDept_options_value === "integration") {
+      this.diff_icon = this.i_dif_icon;
+    }
   },
   async mounted() {
     this.loading = this.$loading({
@@ -178,7 +256,12 @@ export default {
           this.user_dataList[i].lng,
           this.user_dataList[i].lat
         );
-        var marker = new BMap.Marker(pt);
+        //
+        var d_icon = this.diff_icon[this.user_dataList[i].terminal]
+          ? this.diff_icon[this.user_dataList[i].terminal]
+          : "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_other.png";
+        var myIcon = new BMap.Icon(d_icon, new BMap.Size(32, 32));
+        var marker = new BMap.Marker(pt, { icon: myIcon });
         let imgs_dom = '<p class="no_imgs">暂无图片</p>';
         if (this.user_dataList[i].imgs && this.user_dataList[i].imgs.length) {
           imgs_dom = "";
@@ -202,8 +285,10 @@ export default {
       }
       var _styles = [
         {
-          url: "https://aupu.oss-cn-beijing.aliyuncs.com/circle_.png",
-          size: new BMap.Size(32, 32)
+          url:
+            "https://aupu-map.oss-cn-beijing.aliyuncs.com/675809fed8efc01ad664533a7503e93.png",
+          size: new BMap.Size(32, 28),
+          textColor: "#ffffff"
         }
       ];
       var markerClusterer = new BMapLib.MarkerClusterer(this.map, {
@@ -371,13 +456,15 @@ export default {
             Authorization: "Bearer " + this.token
           }
         };
-        let num = this.ownerDept_options_value === 'electric' ? 0 : 1
+        let num = this.ownerDept_options_value === "electric" ? 0 : 1;
         let res = await Axios.get(
           `${this.host}/api/api/MapInfo/listPointsInfo?type=${num}`,
           config
         );
         // let res = await Axios.get(`/api/api/organization/user/info`,config);
         if (res.data.data) {
+          let f_data = res.data.data.filter(x => x.lng !== 0);
+          console.log(f_data);
           return res.data.data;
         } else {
           this.loading.close();
@@ -411,6 +498,10 @@ export default {
         {
           localValue: "term_options_value",
           dataKey: "terminal"
+        },
+        {
+          localValue: "term_belong_options_value",
+          dataKey: "terminalAssignment"
         }
         // {
         //   localValue: "ownerDept_options_value",
@@ -445,6 +536,9 @@ export default {
       if (!this.term_options_disabled) {
         this.term_options_value = "全部";
       }
+      if (!this.term_belong_options_disabled) {
+        this.term_belong_options_value = "全部";
+      }
       this.search();
     },
     deepClone(data) {
@@ -462,29 +556,21 @@ export default {
 }
 .filters {
   flex: 0 0 20%;
-  margin-top: 100px;
+  padding-top: 10px;
+  height: 100vh;
+  overflow: scroll;
 }
-/deep/ .el-form {
-  text-align: center;
-  .el-form-item__label {
-    width: 100px;
-  }
-}
+// /deep/ .el-form {
+//   text-align: center;
+//   .el-form-item__label {
+//     width: 100px;
+//   }
+// }
 .map_container {
   flex: 0 0 80%;
 }
 .map {
   height: 100vh;
   width: 100%;
-}
-/deep/ .demo-form-inline {
-  .el-form-item__label {
-    float: none;
-    display: inline-block;
-  }
-  .el-form-item__content {
-    display: inline-block;
-    vertical-align: top;
-  }
 }
 </style>

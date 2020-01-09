@@ -13,7 +13,8 @@ import BaiduMap from 'vue-baidu-map'
 
 Vue.use(BaiduMap, {
   // ak 是在百度地图开发者平台申请的密钥 详见 http://lbsyun.baidu.com/apiconsole/key */
-  ak: 'gXvtKPxT33SqY0lZx9XljD4fKaVcszrA'
+  // ak: 'gXvtKPxT33SqY0lZx9XljD4fKaVcszrA',
+  ak: 'WO59CLWIMGW3B1qm7CuEd5AKVlD7Rpzl',
 })
 Vue.use(VueJsonp,5000)
 
