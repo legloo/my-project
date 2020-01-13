@@ -122,25 +122,25 @@ export default {
     return {
       diff_icon: null,
       e_dif_icon: {
-        专营店: "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_org.png",
-        专卖店: "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_red.png",
-        KA: "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_blue.png",
+        专营店: "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_org.png",
+        专卖店: "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_red.png",
+        KA: "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_deblue.png",
         照明综合店:
-          "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_yellow.png",
+          "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_yello.png",
         家居综合店:
-          "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_purpo.png",
+          "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_purpo.png",
         五金综合店:
-          "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_green.png",
+          "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_green.png",
         分销网点:
-          "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_sblue.png"
+          "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_blue.png"
       },
       i_dif_icon: {
         集成专卖店:
-          "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_org.png",
+          "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_org.png",
         家装展厅:
-          "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_red.png",
-        KA: "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_blue.png",
-        超市: "https://aupu-map.oss-cn-beijing.aliyuncs.com/location_yellow.png"
+          "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_red.png",
+        KA: "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_deblue.png",
+        超市: "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_yello.png"
       },
       host: "http://47.96.139.66",
       token: "",
@@ -150,7 +150,7 @@ export default {
       user_dataList: [],
       opts: {
         width: 500,
-        height: 300
+        height: 380
       },
       agent_options: [],
       depart_options: [],
@@ -177,7 +177,7 @@ export default {
       ]
     };
   },
-  created() {
+  async created() {
     let query = this.$route.query;
     this.agent_options_value = query.agent_options_value
       ? query.agent_options_value
@@ -211,9 +211,7 @@ export default {
     if (this.ownerDept_options_value === "integration") {
       this.diff_icon = this.i_dif_icon;
     }
-  },
-  async mounted() {
-    this.loading = this.$loading({
+     this.loading = this.$loading({
       lock: true,
       text: "正在加载...",
       spinner: "el-icon-loading",
@@ -226,6 +224,9 @@ export default {
     this.makeOptions();
     this.user_dataList = this.deepClone(this.dataList);
     this.search();
+  },
+  async mounted() {
+   
   },
   methods: {
     // 初始化地图
@@ -272,7 +273,10 @@ export default {
         var content = `
 		<div class="info_container">
 			<p class="title">${this.user_dataList[i].comName}</p>
-			<p class="address"><img src="https://aupu.oss-cn-beijing.aliyuncs.com/location.png" />${this.user_dataList[i].address}</p>
+			<p class="address"><img src="https://aupu-map.oss-cn-beijing.aliyuncs.com/card/agent.png" />${this.user_dataList[i].agent}</p>
+			<p class="address"><img src="https://aupu-map.oss-cn-beijing.aliyuncs.com/card/terminal-window-fill.png" />${this.user_dataList[i].terminal}</p>
+			<p class="address"><img src="https://aupu-map.oss-cn-beijing.aliyuncs.com/card/category.png" />${this.user_dataList[i].terminalAssignment}</p>
+			<p class="address"><img src="https://aupu-map.oss-cn-beijing.aliyuncs.com/card/location.png" />${this.user_dataList[i].address}</p>
 			<p class="tel"><img src="https://aupu.oss-cn-beijing.aliyuncs.com/phone.png" />${this.user_dataList[i].tel}</p>
 			<p class="imgs"><img src="https://aupu.oss-cn-beijing.aliyuncs.com/photo_.png" />相册</p>
 			<div class="com_imgs">
