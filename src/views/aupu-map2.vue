@@ -33,12 +33,8 @@
             ></el-option>
           </el-select>
         </el-form-item>-->
-          <el-form-item label="战区" v-if="currentOptions.shouApiOptions.includes('zq')">
-          <el-select
-            v-model="zq_options_value"
-            :disabled="zq_options_disabled"
-            placeholder="请选择"
-          >
+        <el-form-item label="战区" v-if="currentOptions.shouApiOptions.includes('zq')">
+          <el-select v-model="zq_options_value" :disabled="zq_options_disabled" placeholder="请选择">
             <el-option
               v-for="(item,index) in zq_options"
               :key="'zq_options'+index"
@@ -47,12 +43,8 @@
             ></el-option>
           </el-select>
         </el-form-item>
-          <el-form-item label="省区" v-if="currentOptions.shouApiOptions.includes('sq')">
-          <el-select
-            v-model="sq_options_value"
-            :disabled="sq_options_disabled"
-            placeholder="请选择"
-          >
+        <el-form-item label="省区" v-if="currentOptions.shouApiOptions.includes('sq')">
+          <el-select v-model="sq_options_value" :disabled="sq_options_disabled" placeholder="请选择">
             <el-option
               v-for="(item,index) in sq_options"
               :key="'sq_options'+index"
@@ -85,6 +77,20 @@
             <el-option
               v-for="(item,index) in term_belong_options"
               :key="'term_belong_options'+index"
+              :label="item"
+              :value="item"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="开业状态" v-if="currentOptions.showLocalOptions.includes('openStatus')">
+          <el-select
+            v-model="openStatus_options_value"
+            :disabled="openStatus_options_disabled"
+            placeholder="请选择"
+          >
+            <el-option
+              v-for="(item,index) in openStatus_options"
+              :key="'openStatus_options'+index"
               :label="item"
               :value="item"
             ></el-option>
@@ -186,6 +192,7 @@ export default {
       term_belong_options: ["全部", "代理商", "分销商"],
       zq_options: [],
       sq_options: [],
+      openStatus_options: ["全部", "营业中", "已停业", "建设中", "作废"],
 
       agent_options_value: "全部",
       // depart_options_value: "全部",
@@ -194,6 +201,7 @@ export default {
       term_belong_options_value: "全部",
       zq_options_value: "全部",
       sq_options_value: "全部",
+      openStatus_options_value: "全部",
 
       agent_options_disabled: false,
       // depart_options_disabled: false,
@@ -202,6 +210,7 @@ export default {
       term_belong_options_disabled: false,
       zq_options_disabled: false,
       sq_options_disabled: false,
+      openStatus_options_disabled: false,
 
       color_g: [
         [0, 1, "#F4F4F4"],
@@ -431,24 +440,14 @@ export default {
       this.zq_options = Array.from(
         new Set(
           this.dataList
-            .filter(
-              x =>
-                x.zq !== null &&
-                x.zq !== "" &&
-                x.zq !== undefined
-            )
+            .filter(x => x.zq !== null && x.zq !== "" && x.zq !== undefined)
             .map(x => x.zq)
         )
       );
       this.sq_options = Array.from(
         new Set(
           this.dataList
-            .filter(
-              x =>
-                x.sq !== null &&
-                x.sq !== "" &&
-                x.sq !== undefined
-            )
+            .filter(x => x.sq !== null && x.sq !== "" && x.sq !== undefined)
             .map(x => x.sq)
         )
       );
@@ -577,11 +576,15 @@ export default {
         {
           localValue: "term_belong_options_value",
           dataKey: "terminalAssignment"
+        },
+        {
+          localValue: "term_belong_options_value",
+          dataKey: "terminalAssignment"
+        },
+        {
+          localValue: "openStatus_options_value",
+          dataKey: "openStatus"
         }
-        // {
-        //   localValue: "ownerDept_options_value",
-        //   dataKey: "ownerDept"
-        // }
       ];
       for (let i = 0; i < filterKeys.length; i++) {
         // console.log(this[filterKeys[i].localValue]);
@@ -590,13 +593,14 @@ export default {
           this[filterKeys[i].localValue] &&
           this[filterKeys[i].localValue] !== "全部"
         ) {
+          console.log(this[filterKeys[i].localValue]);
           this.user_dataList = this.user_dataList.filter(
             x => x[filterKeys[i].dataKey] === this[filterKeys[i].localValue]
           );
         }
       }
-      let hadGeo = this.user_dataList.filter(x => x.lng !==0 && x.lat !==0);
-      let msg = `查询到共${this.user_dataList.length}家门店，其中有坐标的门店为${hadGeo.length}家`
+      let hadGeo = this.user_dataList.filter(x => x.lng !== 0 && x.lat !== 0);
+      let msg = `查询到共${this.user_dataList.length}家门店，其中有坐标的门店为${hadGeo.length}家`;
       this.$message.info(msg);
       this.loading.close();
       this.setMap();
