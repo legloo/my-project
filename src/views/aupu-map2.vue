@@ -1,10 +1,10 @@
 <template>
   <div class="container">
-    <div class="filters">
+    <div class="filters" v-if="currentOptions">
       <el-form :label-position="'top'" style="width: 58%;
     margin: auto;
 }">
-        <el-form-item label="代理商">
+        <el-form-item label="代理商" v-if="currentOptions.shouApiOptions.includes('agent')">
           <el-select
             filterable
             v-model="agent_options_value"
@@ -19,7 +19,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="所属部门">
+        <!-- <el-form-item label="所属部门">
           <el-select
             v-model="depart_options_value"
             :disabled="depart_options_disabled"
@@ -32,8 +32,37 @@
               :value="item"
             ></el-option>
           </el-select>
+        </el-form-item>-->
+          <el-form-item label="战区" v-if="currentOptions.shouApiOptions.includes('zq')">
+          <el-select
+            v-model="zq_options_value"
+            :disabled="zq_options_disabled"
+            placeholder="请选择"
+          >
+            <el-option
+              v-for="(item,index) in zq_options"
+              :key="'zq_options'+index"
+              :label="item"
+              :value="item"
+            ></el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="终端类别">
+          <el-form-item label="省区" v-if="currentOptions.shouApiOptions.includes('sq')">
+          <el-select
+            v-model="sq_options_value"
+            :disabled="sq_options_disabled"
+            placeholder="请选择"
+          >
+            <el-option
+              v-for="(item,index) in sq_options"
+              :key="'sq_options'+index"
+              :label="item"
+              :value="item"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="终端类别" v-if="currentOptions.shouApiOptions.includes('terminal')">
           <el-select
             v-model="term_options_value"
             :disabled="term_options_disabled"
@@ -47,7 +76,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="终端所属">
+        <el-form-item label="终端所属" v-if="currentOptions.showLocalOptions.includes('term_belong')">
           <el-select
             v-model="term_belong_options_value"
             :disabled="term_belong_options_disabled"
@@ -95,6 +124,7 @@
 import BMap from "BMap";
 import { setTimeout } from "timers";
 import Axios from "axios";
+import { mapInfo } from "./utils/aupu-map";
 export default {
   computed: {
     get_dif_icons() {
@@ -102,7 +132,6 @@ export default {
       if (!this.diff_icon) {
         return [];
       }
-      console.log(123)
       for (let key in this.diff_icon) {
         let item = {
           name: key,
@@ -131,14 +160,11 @@ export default {
           "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_purpo.png",
         五金综合店:
           "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_green.png",
-        分销网点:
-          "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_blue.png"
+        分销网点: "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_blue.png"
       },
       i_dif_icon: {
-        集成专卖店:
-          "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_org.png",
-        家装展厅:
-          "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_red.png",
+        集成专卖店: "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_org.png",
+        家装展厅: "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_red.png",
         KA: "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_deblue.png",
         超市: "https://aupu-map.oss-cn-beijing.aliyuncs.com/flag_yello.png"
       },
@@ -152,29 +178,39 @@ export default {
         width: 500,
         height: 380
       },
+
       agent_options: [],
-      depart_options: [],
+      // depart_options: [],
       term_options: [],
       ownerDept_options: ["全部"],
+      term_belong_options: ["全部", "代理商", "分销商"],
+      zq_options: [],
+      sq_options: [],
+
       agent_options_value: "全部",
-      depart_options_value: "全部",
+      // depart_options_value: "全部",
       term_options_value: "全部",
       ownerDept_options_value: "全部",
+      term_belong_options_value: "全部",
+      zq_options_value: "全部",
+      sq_options_value: "全部",
+
       agent_options_disabled: false,
-      depart_options_disabled: false,
+      // depart_options_disabled: false,
       term_options_disabled: false,
       ownerDept_options_disabled: false,
-
-      term_belong_options_value: "全部",
       term_belong_options_disabled: false,
-      term_belong_options: ["全部", "代理商", "分销商"],
+      zq_options_disabled: false,
+      sq_options_disabled: false,
+
       color_g: [
         [0, 1, "#F4F4F4"],
         [1, 20, "#9fc2e6"],
         [20, 50, "#81b4e8"],
         [50, 100, "#589fe8"],
         [100, 200, "#2283e6"]
-      ]
+      ],
+      currentOptions: null
     };
   },
   async created() {
@@ -182,9 +218,9 @@ export default {
     this.agent_options_value = query.agent_options_value
       ? query.agent_options_value
       : "全部";
-    this.depart_options_value = query.depart_options_value
-      ? query.depart_options_value
-      : "全部";
+    // this.depart_options_value = query.depart_options_value
+    //   ? query.depart_options_value
+    //   : "全部";
     this.term_options_value = query.term_options_value
       ? query.term_options_value
       : "全部";
@@ -192,7 +228,7 @@ export default {
     //   ? query.ownerDept_options_value
     //   : "全部";
     this.agent_options_disabled = query.agent_options_value ? true : false;
-    this.depart_options_disabled = query.depart_options_value ? true : false;
+    // this.depart_options_disabled = query.depart_options_value ? true : false;
     this.term_options_disabled = query.term_options_value ? true : false;
     // this.ownerDept_options_disabled = query.ownerDept_options_disabled
     //   ? true
@@ -204,6 +240,7 @@ export default {
     if (!["electric", "integration"].includes(query.type)) {
       return this.$message.error("type error,please check");
     }
+
     this.ownerDept_options_value = query.type;
     if (this.ownerDept_options_value === "electric") {
       this.diff_icon = this.e_dif_icon;
@@ -211,7 +248,9 @@ export default {
     if (this.ownerDept_options_value === "integration") {
       this.diff_icon = this.i_dif_icon;
     }
-     this.loading = this.$loading({
+    this.currentOptions = mapInfo.filter(x => x.code === query.type)[0];
+    console.log("this.currentOptions", this.currentOptions);
+    this.loading = this.$loading({
       lock: true,
       text: "正在加载...",
       spinner: "el-icon-loading",
@@ -225,9 +264,7 @@ export default {
     this.user_dataList = this.deepClone(this.dataList);
     this.search();
   },
-  async mounted() {
-   
-  },
+  async mounted() {},
   methods: {
     // 初始化地图
     setMap() {
@@ -291,7 +328,7 @@ export default {
         {
           url:
             "https://aupu-map.oss-cn-beijing.aliyuncs.com/675809fed8efc01ad664533a7503e93.png",
-          size: new BMap.Size(32, 28),
+          size: new BMap.Size(32, 32),
           textColor: "#ffffff"
         }
       ];
@@ -379,16 +416,40 @@ export default {
             .map(x => x.agent)
         )
       );
-      this.depart_options = Array.from(
+      // this.depart_options = Array.from(
+      //   new Set(
+      //     this.dataList
+      //       .filter(
+      //         x =>
+      //           x.department !== null &&
+      //           x.department !== "" &&
+      //           x.department !== undefined
+      //       )
+      //       .map(x => x.department)
+      //   )
+      // );
+      this.zq_options = Array.from(
         new Set(
           this.dataList
             .filter(
               x =>
-                x.department !== null &&
-                x.department !== "" &&
-                x.department !== undefined
+                x.zq !== null &&
+                x.zq !== "" &&
+                x.zq !== undefined
             )
-            .map(x => x.department)
+            .map(x => x.zq)
+        )
+      );
+      this.sq_options = Array.from(
+        new Set(
+          this.dataList
+            .filter(
+              x =>
+                x.sq !== null &&
+                x.sq !== "" &&
+                x.sq !== undefined
+            )
+            .map(x => x.sq)
         )
       );
       this.term_options = Array.from(
@@ -426,7 +487,9 @@ export default {
         }
       ];
       this.agent_options.unshift("全部");
-      this.depart_options.unshift("全部");
+      this.zq_options.unshift("全部");
+      this.sq_options.unshift("全部");
+      // this.depart_options.unshift("全部");
       this.term_options.unshift("全部");
       this.ownerDept_options.unshift("全部");
       this.select_show = true;
@@ -496,9 +559,17 @@ export default {
           dataKey: "agent"
         },
         {
-          localValue: "depart_options_value",
-          dataKey: "department"
+          localValue: "zq_options_value",
+          dataKey: "zq"
         },
+        {
+          localValue: "sq_options_value",
+          dataKey: "sq"
+        },
+        // {
+        //   localValue: "depart_options_value",
+        //   dataKey: "department"
+        // },
         {
           localValue: "term_options_value",
           dataKey: "terminal"
@@ -513,7 +584,7 @@ export default {
         // }
       ];
       for (let i = 0; i < filterKeys.length; i++) {
-        console.log(this[filterKeys[i].localValue]);
+        // console.log(this[filterKeys[i].localValue]);
 
         if (
           this[filterKeys[i].localValue] &&
@@ -524,19 +595,25 @@ export default {
           );
         }
       }
-      if (!this.user_dataList.length) {
-        this.loading.close();
-        this.$message.info("无符合条件的门店信息");
-      }
+      let hadGeo = this.user_dataList.filter(x => x.lng !==0 && x.lat !==0);
+      let msg = `查询到共${this.user_dataList.length}家门店，其中有坐标的门店为${hadGeo.length}家`
+      this.$message.info(msg);
+      this.loading.close();
       this.setMap();
     },
     reset() {
       if (!this.agent_options_disabled) {
         this.agent_options_value = "全部";
       }
-      if (!this.depart_options_disabled) {
-        this.depart_options_value = "全部";
+      if (!this.zq_options_disabled) {
+        this.zq_options_value = "全部";
       }
+      if (!this.sq_options_disabled) {
+        this.sq_options_value = "全部";
+      }
+      // if (!this.depart_options_disabled) {
+      //   this.depart_options_value = "全部";
+      // }
       if (!this.term_options_disabled) {
         this.term_options_value = "全部";
       }
