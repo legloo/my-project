@@ -24,10 +24,7 @@
       </el-form-item>
     </el-form>
     <el-table border :data="tableData" stripe style="width: 100%" height="750">
-         <el-table-column
-      type="index"
-      width="50">
-    </el-table-column>
+      <el-table-column type="index" width="50"></el-table-column>
       <el-table-column prop="title" label="任务"></el-table-column>
       <el-table-column prop="workItem" label="工时（人天）"></el-table-column>
       <el-table-column prop="month" label="月份"></el-table-column>
@@ -43,9 +40,9 @@
 </template>
 
 <script>
-import axios from "axios";
 import moment from "moment";
 const monthOptions = new Array(12).fill(0).map((x, index) => (x = index + 1));
+import { addAuLog, patchAuLog, deleteAuLog, getAuLog } from "../apis/apis";
 export default {
   data() {
     return {
@@ -53,7 +50,6 @@ export default {
       isEdit: false,
       editItem: null,
       tableData: [],
-      host: "http://localhost:3000",
       url: "/domain/api/authine_logs",
       currentMonth: 1,
       monthOptions,
@@ -72,7 +68,7 @@ export default {
   methods: {
     monthChange(e) {
       this.totalTime = 0;
-      this.tableData = []
+      this.tableData = [];
       this.init();
     },
     async handleClick(e, type) {
@@ -84,7 +80,7 @@ export default {
         this.editItem = e;
       }
       if (type === "delete") {
-        let res = await axios.delete(this.url + `/${e._id}`);
+        let res = await deleteAuLog(e._id);
         this.init();
       }
     },
@@ -95,12 +91,7 @@ export default {
       let options = {
         limit: 9999
       };
-      let res = await axios.get(
-        this.url +
-          `?_options=${JSON.stringify(options)}&_filters=${JSON.stringify(
-            _filters
-          )}`
-      );
+      let res = await getAuLog(options, _filters);
       if (res.status === 200 && res.data.docs.length) {
         res.data.docs.map(x => {
           x.timeFormat = moment(x.time).format("YYYY-MM-DD HH:mm:SS");
@@ -119,7 +110,7 @@ export default {
         workItem: this.formInline.time,
         month: this.formInline.month
       };
-      let res = await axios.patch(this.url + `/${this.editItem._id}`, req);
+      let res = await patchAuLog(this.editItem._id, req);
       this.isEdit = false;
       this.formInline.title = "";
       this.formInline.time = "";
@@ -136,7 +127,7 @@ export default {
         workItem: this.formInline.time,
         month: this.formInline.month
       };
-      const res = await axios.post(this.url, req);
+      const res = await addAuLog(req);
       if (res.status === 201) {
         this.init();
       } else {

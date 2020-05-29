@@ -70,6 +70,11 @@ export default new Router({
       path: '/authineLogs',
       name: 'authineLogs',
       component: () => import('@/views/authine-logs.vue')
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('@/views/jwt-login.vue')
     }
   ]
 })
