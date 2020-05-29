@@ -63,25 +63,25 @@ export default new Router({
     //   name: 'scroll',
     //   component: scroll
     // },
-    {
-      path: '/word_old',
-      name: 'word_old',
-      component: word
-    },
+    // {
+    //   path: '/word_old',
+    //   name: 'word_old',
+    //   component: word
+    // },
     {
       path: '/word',
       name: 'word',
       component: wordv2
     },
-    {
-      path: '/china-map',
-      name: 'china-map',
-      component: china
-    },
-    {
-      path: '/signature',
-      name: 'signature',
-      component: () => import('../views/signature.vue')
-    }
+    // {
+    //   path: '/china-map',
+    //   name: 'china-map',
+    //   component: china
+    // },
+    // {
+    //   path: '/signature',
+    //   name: 'signature',
+    //   component: () => import('../views/signature.vue')
+    // }
   ]
 })
