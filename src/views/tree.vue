@@ -1,14 +1,17 @@
 <template>
   <div class="main">
-    <TreeRight :list="list" :showfields="showFields" />
+    <!-- <TreeRight :list="list" :showfields="showFields" /> -->
+    <TreeDown :list="list" :showfields_="showFields" :height="200" :width="200" />
   </div>
 </template>
 
 <script>
 import TreeRight from "vue-tree-right";
+import TreeDown from "vue-tree-down";
 export default {
   components: {
     TreeRight,
+    TreeDown
   },
   data() {
     return {

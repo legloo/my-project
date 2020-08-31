@@ -31,6 +31,7 @@
     "vue-jsonp": "^0.1.8",
     "vue-quill-editor": "3.0.6",
     "vue-router": "^3.0.1",
+    "vue-tree-down": "^1.0.1",
     "vue-tree-right": "^1.0.1",
     "vue2-better-scroll": "^1.2.1",
     "vux": "^2.9.4",
