@@ -10,6 +10,7 @@ import vant from '@/views/vant-test'
 import better_scroll from '@/views/better-scroll'
 import scroll from '@/views/scroll'
 import word from '@/views/word'
+// import tree from '@/views/tree.vue'
 
 
 Vue.use(Router)
@@ -75,6 +76,11 @@ export default new Router({
       path: '/login',
       name: 'login',
       component: () => import('@/views/jwt-login.vue')
+    },
+    {
+      path: '/tree',
+      name: 'tree',
+      component: () => import('@/views/tree.vue')
     }
   ]
 })

@@ -56,8 +56,8 @@ export default {
       formInline: {
         title: "",
         time: "",
-        month: ""
-      }
+        month: "",
+      },
     };
   },
   created() {
@@ -86,19 +86,19 @@ export default {
     },
     async init() {
       let _filters = {
-        month: this.currentMonth
+        month: this.currentMonth,
       };
       let options = {
-        limit: 9999
+        limit: 9999,
       };
       let res = await getAuLog(options, _filters);
       if (res.status === 200 && res.data.docs.length) {
-        res.data.docs.map(x => {
+        res.data.docs.map((x) => {
           x.timeFormat = moment(x.time).format("YYYY-MM-DD HH:mm:SS");
         });
         this.tableData = res.data.docs;
         this.totalTime = res.data.docs
-          .map(x => Number(x.workItem))
+          .map((x) => Number(x.workItem))
           .reduce((a, b) => a + b);
       }
       this.formInline.title = "";
@@ -108,7 +108,7 @@ export default {
       let req = {
         title: this.formInline.title,
         workItem: this.formInline.time,
-        month: this.formInline.month
+        month: this.formInline.month,
       };
       let res = await patchAuLog(this.editItem._id, req);
       this.isEdit = false;
@@ -125,7 +125,7 @@ export default {
       let req = {
         title: this.formInline.title,
         workItem: this.formInline.time,
-        month: this.formInline.month
+        month: this.formInline.month,
       };
       const res = await addAuLog(req);
       if (res.status === 201) {
@@ -133,8 +133,8 @@ export default {
       } else {
         this.$message.error(res.statusText);
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

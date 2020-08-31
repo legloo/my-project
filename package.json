@@ -14,6 +14,7 @@
     "deploy": "scp -r  dist/* /usr/local/Cellar/nginx/1.17.6/html"
   },
   "dependencies": {
+    "ant-design-vue": "^1.6.5",
     "axios": "^0.19.0",
     "better-scroll": "^1.15.2",
     "cube-ui": "^1.12.30",
@@ -30,6 +31,7 @@
     "vue-jsonp": "^0.1.8",
     "vue-quill-editor": "3.0.6",
     "vue-router": "^3.0.1",
+    "vue-tree-right": "^1.0.1",
     "vue2-better-scroll": "^1.2.1",
     "vux": "^2.9.4",
     "wangeditor": "3.1.1",
