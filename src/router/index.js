@@ -81,6 +81,11 @@ export default new Router({
       path: '/tree',
       name: 'tree',
       component: () => import('@/views/tree.vue')
+    },
+    {
+      path: '/pie',
+      name: 'pie',
+      component: () => import('@/views/vue-pie.vue')
     }
   ]
 })
