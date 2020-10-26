@@ -86,6 +86,11 @@ export default new Router({
       path: '/pie',
       name: 'pie',
       component: () => import('@/views/vue-pie.vue')
+    },
+    {
+      path: '/solar-system',
+      name: 'solar-system',
+      component: () => import('@/views/solar-system.vue')
     }
   ]
 })
