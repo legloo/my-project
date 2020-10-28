@@ -3,7 +3,7 @@
     <div
       v-for="(planet, index) in system"
       :key="'system' + index"
-      class="fa fa-contain"
+      class="fa"
       :style="{
         height: `${planet.fa / farule}px`,
         width: `${planet.fa / farule}px`,
@@ -94,7 +94,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
 .container {
   background-color: antiquewhite;
   height: 10000px;

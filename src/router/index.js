@@ -91,6 +91,11 @@ export default new Router({
       path: '/solar-system',
       name: 'solar-system',
       component: () => import('@/views/solar-system.vue')
+    },
+    {
+      path: '/rxjs-sandbox',
+      name: 'rxjs-sandbox',
+      component: () => import('@/views/rxjs-sandbox.vue')
     }
   ]
 })

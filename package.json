@@ -24,6 +24,8 @@
     "mammoth": "^1.4.8",
     "moment": "^2.26.0",
     "netease-nim-web-sdk": "^1.0.4",
+    "rxjs": "^6.6.3",
+    "rxjs-compat": "^6.6.3",
     "vant": "^2.1.8",
     "vue": "^2.5.2",
     "vue-count-diy": "^1.0.1",
