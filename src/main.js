@@ -13,6 +13,13 @@ Vue.use(VueJsonp,5000)
 Vue.use(iView);
 Vue.use(ElementUI);
 
+import VueDraggableResizable from 'vue-draggable-resizable'
+ 
+// optionally import default styles
+import 'vue-draggable-resizable/dist/VueDraggableResizable.css'
+ 
+Vue.component('vue-draggable-resizable', VueDraggableResizable)
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

@@ -96,6 +96,11 @@ export default new Router({
       path: '/rxjs-sandbox',
       name: 'rxjs-sandbox',
       component: () => import('@/views/rxjs-sandbox.vue')
+    },
+    {
+      path: '/vue-draggable-resizable',
+      name: 'vue-draggable-resizable',
+      component: () => import('@/views/vue-draggable-resizable.vue')
     }
   ]
 })
