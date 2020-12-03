@@ -3,28 +3,22 @@
 <template>
   <div>
     <div>
-      <!-- <div class="layoutJSON">
-                Displayed as <code>[x, y, w, h]</code>:
-                <div class="columns">
-                    <div class="layoutItem" v-for="item in layout">
-                        <b>{{ item.i }}</b>: [{{ item.x }}, {{ item.y }}, {{ item.w }}, {{ item.h }}]
-                    </div>
-                </div>
-            </div> -->
+      <div
+        @drag="drag"
+        @dragend="dragend"
+        class="droppable-element"
+        draggable="true"
+        unselectable="on"
+      >
+        布局
+      </div>
+      <!-- <drag class="drag" :transfer-data="{ example: 'styling' }">列表控件</drag> -->
     </div>
-    <br />
-    <div
-      @drag="drag"
-      @dragend="dragend"
-      class="droppable-element"
-      draggable="true"
-      unselectable="on"
-    >
-      布局
-    </div>
+
     <div id="content">
       <grid-layout
         ref="gridlayout"
+        :class="{ 'right-show': modalShow }"
         :layout.sync="layout"
         :col-num="36"
         :row-height="30"
@@ -42,37 +36,60 @@
           :h="item.h"
           :i="item.i"
         >
-          <span class="text">{{ item.i }}</span>
+          <div class="gitem" @click.prevent="gitemClick(item)">
+            <control :item="item" />
+          </div>
         </grid-item>
       </grid-layout>
     </div>
+    <ModalSet
+      :mshow="modalShow"
+      :currentItem="currentItem"
+      @modalMsg="modalMsg"
+    />
+    <button @click="layouts">layout</button>
+    <el-button @click="save()">保存</el-button>
   </div>
 </template>
 
 <script>
 import { GridLayout, GridItem } from "vue-grid-layout";
 let mouseXY = { x: null, y: null };
-let DragPos = { x: null, y: null, w: 1, h: 1, i: null };
+let DragPos = { x: null, y: null, w: 10, h: 4, i: null };
+import * as configs from "../components/drag/components/index";
+import ModalSet from "../components/drag/model-set.vue";
+import { Drag, Drop } from "vue-drag-drop";
+import control from "../components/drag-control/index.vue";
 export default {
   components: {
+    control,
     GridLayout,
     GridItem,
+    ModalSet,
+    Drag,
+    Drop,
   },
   data() {
     return {
-      layout: [
-        // {"x": 0, "y": 0, "w": 2, "h": 2, "i": "0"},
-        // {"x": 2, "y": 0, "w": 2, "h": 4, "i": "1"},
-        // {"x": 4, "y": 0, "w": 2, "h": 5, "i": "2"},
-        // {"x": 6, "y": 0, "w": 2, "h": 3, "i": "3"},
-        // {"x": 8, "y": 0, "w": 2, "h": 3, "i": "4"},
-        // {"x": 10, "y": 0, "w": 2, "h": 3, "i": "5"},
-        // {"x": 0, "y": 5, "w": 2, "h": 5, "i": "6"},
-        // {"x": 2, "y": 5, "w": 2, "h": 5, "i": "7"},
-        // {"x": 4, "y": 5, "w": 2, "h": 5, "i": "8"},
-        // {"x": 5, "y": 10, "w": 4, "h": 3, "i": "9"},
-      ],
+      currentItem: {
+        config: {
+          code: null,
+        },
+        optionsProps: [],
+      },
+      over: false,
+      layout: [],
+      modalShow: false,
+      dw: 10,
+      dh: 4,
     };
+  },
+  computed: {},
+  created() {
+    let localData = localStorage.getItem("layout");
+    if (localData) {
+      this.layout = JSON.parse(localData);
+    }
   },
   mounted() {
     document.addEventListener(
@@ -84,8 +101,50 @@ export default {
       false
     );
   },
-  beforeDestroy() {},
   methods: {
+    save() {
+      localStorage.setItem("layout", JSON.stringify(this.layout));
+      this.modalShow = false;
+    },
+    gitemClick(item) {
+      // this.modalShow = false;
+      // setTimeout(() => {
+      this.currentItem = item;
+      this.modalShow = true;
+      // }, 300);
+    },
+    layouts() {
+      console.log(this.layout);
+    },
+    handleDrop(data) {
+      this.over = false;
+      alert(`You dropped with data: ${JSON.stringify(data)}`);
+    },
+    modalMsg(e) {
+      if (e.type === "off") {
+        this.modalShow = false;
+      }
+      if (e.type === "code") {
+        // this.modalShow = false;
+        let item = configs.default.filter(
+          (x) => x.config.code === this.currentItem.config.code
+        )[0];
+        // this.currentItem.optionsProps = item.optionsProps;
+        this.$set(this.currentItem, "optionsProps", item.optionsProps);
+        for (let i = 0; i < item.optionsProps.length; i++) {
+          // this.currentItem[item.optionsProps[i].code] =
+          //     item.optionsProps[i].default;
+          this.$set(
+            this.currentItem,
+            item.optionsProps[i].code,
+            item.optionsProps[i].default
+          );
+        }
+      }
+      if (e.type === "props") {
+        this.currentItem[e.code] = e.content;
+      }
+    },
     drag: function (e) {
       let parentRect = document
         .getElementById("content")
@@ -106,19 +165,23 @@ export default {
         this.layout.push({
           x: (this.layout.length * 2) % (this.colNum || 12),
           y: this.layout.length + (this.colNum || 12), // puts it at the bottom
-          w: 1,
-          h: 1,
+          w: this.dw,
+          h: this.dh,
           i: "drop",
+          config: {
+            code: null,
+          },
         });
       }
       let index = this.layout.findIndex((item) => item.i === "drop");
       if (index !== -1) {
-        // try {
-        this.$refs.gridlayout.$children[
-          this.layout.length
-        ].$refs.item.style.display = "none";
-        // } catch {
-        // }
+        try {
+          this.$refs.gridlayout.$children[
+            this.layout.length
+          ].$refs.item.style.display = "none";
+        } catch (e) {
+          console.log(e);
+        }
         let el = this.$refs.gridlayout.$children[index];
         el.dragging = {
           top: mouseXY.y - parentRect.top,
@@ -134,8 +197,8 @@ export default {
             "drop",
             new_pos.x,
             new_pos.y,
-            1,
-            5
+            this.dh,
+            this.dw
           );
           DragPos.i = String(index);
           DragPos.x = this.layout[index].x;
@@ -147,8 +210,8 @@ export default {
             "drop",
             new_pos.x,
             new_pos.y,
-            1,
-            5
+            this.dh,
+            this.dw
           );
           this.layout = this.layout.filter((obj) => obj.i !== "drop");
         }
@@ -174,29 +237,36 @@ export default {
           "drop",
           DragPos.x,
           DragPos.y,
-          1,
-          5
+          this.dh,
+          this.dw
         );
         this.layout = this.layout.filter((obj) => obj.i !== "drop");
         // UNCOMMENT below if you want to add a grid-item
-        this.layout.push({
+        let citem = {
           x: DragPos.x,
           y: DragPos.y,
-          w: 5,
-          h: 1,
+          w: this.dw,
+          h: this.dh,
           i: DragPos.i,
-        });
-        this.$refs.gridLayout.dragEvent(
-          "dragend",
-          DragPos.i,
-          DragPos.x,
-          DragPos.y,
-          1,
-          1
-        );
-        this.$refs.gridLayout.$children[
-          this.layout.length
-        ].$refs.item.style.display = "block";
+          config: {
+            code: null,
+          },
+        };
+        this.layout.push(citem);
+
+        // this.$refs.gridLayout.dragEvent(
+        //   "dragend",
+        //   DragPos.i,
+        //   DragPos.x,
+        //   DragPos.y,
+        //   1,
+        //   1
+        // );
+        // this.$refs.gridLayout.$children[
+        //   this.layout.length
+        // ].$refs.item.style.display = "block";
+        // this.currentItem = citem;
+        // this.modalShow = true;
       }
     },
   },
@@ -204,6 +274,25 @@ export default {
 </script>
 
 <style scoped>
+.drop.over {
+  border-color: #aaa;
+  background: #ccc;
+}
+.drop {
+  background: green;
+  height: 100%;
+}
+.drag {
+  height: 30px;
+  width: 100px;
+  background: yellow;
+}
+.gitem {
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  padding: 5px;
+}
 .droppable-element {
   width: 150px;
   text-align: center;
@@ -213,8 +302,13 @@ export default {
   padding: 10px;
 }
 .vue-grid-layout {
-  background: #eee;
-  min-height: 500px;
+  width: 100%;
+  background: #a3cc9e;
+  min-height: 80vh;
+  transition: height 300ms ease-in-out, width 300ms ease-in-out;
+}
+.right-show {
+  width: calc(100% - 300px);
 }
 .vue-grid-item:not(.vue-grid-placeholder) {
   background: #ccc;

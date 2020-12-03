@@ -30,6 +30,7 @@
     "vue": "^2.5.2",
     "vue-count-diy": "^1.0.1",
     "vue-count-to": "^1.0.13",
+    "vue-drag-drop": "^1.1.4",
     "vue-draggable-resizable": "^2.2.0",
     "vue-grid-layout": "2.3.7",
     "vue-jsonp": "^0.1.8",
