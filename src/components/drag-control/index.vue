@@ -1,7 +1,6 @@
 <template>
   <div class="cmain">
     <p style="display:none">{{ item }}</p>
-    <!-- <p>{{ props_ }}</p> -->
     <component v-if="item" :is="component" v-bind="props_"></component>
   </div>
 </template>

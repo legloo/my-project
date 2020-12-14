@@ -2,6 +2,7 @@
   
 <template>
   <div>
+    
     <div>
       <div
         @drag="drag"
@@ -18,7 +19,6 @@
     <div id="content">
       <grid-layout
         ref="gridlayout"
-        :class="{ 'right-show': modalShow }"
         :layout.sync="layout"
         :col-num="36"
         :row-height="30"
@@ -42,11 +42,11 @@
         </grid-item>
       </grid-layout>
     </div>
-    <ModalSet
+    <!-- <ModalSet
       :mshow="modalShow"
       :currentItem="currentItem"
       @modalMsg="modalMsg"
-    />
+    /> -->
     <button @click="layouts">layout</button>
     <el-button @click="save()">保存</el-button>
   </div>
@@ -297,7 +297,7 @@ export default {
   width: 150px;
   text-align: center;
   background: #fdd;
-  border: 1px dashed #8e8c8c;
+  /* border: 1px dashed #8e8c8c; */
   margin: 10px 0;
   padding: 10px;
 }
@@ -312,7 +312,7 @@ export default {
 }
 .vue-grid-item:not(.vue-grid-placeholder) {
   background: #ccc;
-  border: 1px dashed #8e8c8c;
+  /* border: 1px dashed #8e8c8c; */
 }
 .vue-grid-item .resizing {
   opacity: 0.9;
@@ -360,7 +360,7 @@ export default {
 
 .layoutJSON {
   background: #ddd;
-  border: 1px dashed #8e8c8c;
+  /* border: 1px dashed #8e8c8c; */
   margin-top: 10px;
   padding: 10px;
 }
